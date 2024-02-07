@@ -1,6 +1,7 @@
 import sys
 import csv
 import pandas as pd
+import numpy as np
 
 def load_csv(path: str) -> pd.DataFrame:
     assert path.lower().endswith(".csv"), "Path in wrong format, .csv"
@@ -19,7 +20,7 @@ class Describe:
     def get_all_information(self):
         options = ["Count", "Mean", "Std", "25%", "50%", "75%", "Max"]
         for feature in self.features:
-            values = self.get_feature_informations(self.features[feature].values.astype(float))
+            values = self.get_feature_informations(self.features[feature].replace([np.nan], 0).values.astype(float))
             # print(feature)
         # data = {'':options}
         # print(self)
@@ -31,21 +32,44 @@ class Describe:
         values_return = []
         values_return.append(self.count(values_calcul))
         values_return.append(self.mean(values_calcul))
+        values_return.append(self.std(values_calcul))
+        values_return.append(self.min(values_calcul))
+        values_return.append(self.percentile(values_calcul, 0.80))
         print(values_return)
         
     
     def mean(self, values):
         add_values = 0
-        print(values)
         for value in values:
-            add_values += value
-        
+            if value:
+                add_values += value
         return add_values / len(values)
+
+    def std(self, values):
+        mean = self.mean(values)
+        add_values = 0
+        for value in values:
+            add_values += (value - mean)**2
+        std = (add_values / len(values))**0.5
+        return std
+
+    def min(self, values):
+        minimun = values[0]
+        for value in values:
+            if minimun > value:
+                minimun = value
+        return minimun
+
+    def percentile(self, values, percent):
+        sorted_values = np.sort(values)
+        percentile = round(len(values) * percent)
+        print(np.percentile(values, 80))
+        # print(sorted_values)
+        # return 5
+        return sorted_values[percentile - 1]
 
     def count(self, values):
         return len(values)
-    
-    
 
 def main():
     try:

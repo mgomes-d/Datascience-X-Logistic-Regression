@@ -27,9 +27,6 @@ class Describe:
         data = {}
         for feature_name, value in zip(features_names, values):
             data[feature_name] = value
-        # print(data)
-        # print(self)
-        # print(values)
         all_information = pd.DataFrame(data, index=options)
         print(all_information)
 
@@ -87,7 +84,6 @@ def main():
     try:
         describe = Describe(sys.argv[1])
         describe.get_all_information()
-
     except Exception as msg:
         print(msg)
 

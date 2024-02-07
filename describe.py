@@ -18,14 +18,20 @@ class Describe:
         return self.df.select_dtypes(include=[float])
 
     def get_all_information(self):
-        options = ["Count", "Mean", "Std", "25%", "50%", "75%", "Max"]
+        options = ["Count", "Mean", "Std", "Min", "25%", "50%", "75%", "Max"]
+        features_names = []
+        values = []
         for feature in self.features:
-            values = self.get_feature_informations(self.features[feature].replace([np.nan], 0).values.astype(float))
-            # print(feature)
-        # data = {'':options}
+            features_names.append(feature)
+            values.append(self.get_feature_informations(self.features[feature].replace([np.nan], 0).values.astype(float)))
+        data = {}
+        for feature_name, value in zip(features_names, values):
+            data[feature_name] = value
+        # print(data)
         # print(self)
-        # all_information = pd.DataFrame(data)
-        # print(all_information)
+        # print(values)
+        all_information = pd.DataFrame(data, index=options)
+        print(all_information)
 
 
     def get_feature_informations(self, values_calcul):
@@ -34,9 +40,18 @@ class Describe:
         values_return.append(self.mean(values_calcul))
         values_return.append(self.std(values_calcul))
         values_return.append(self.min(values_calcul))
-        values_return.append(self.percentile(values_calcul, 0.80))
-        print(values_return)
+        values_return.append(self.percentile(values_calcul, 0.25))
+        values_return.append(self.percentile(values_calcul, 0.50))
+        values_return.append(self.percentile(values_calcul, 0.75))
+        values_return.append(self.max(values_calcul))
+        return values_return
         
+    def max(self, values):
+        maximun = values[0]
+        for value in values:
+            if value > maximun:
+                maximun = value
+        return maximun
     
     def mean(self, values):
         add_values = 0
@@ -63,10 +78,7 @@ class Describe:
     def percentile(self, values, percent):
         sorted_values = np.sort(values)
         percentile = round(len(values) * percent)
-        print(np.percentile(values, 80))
-        # print(sorted_values)
-        # return 5
-        return sorted_values[percentile - 1]
+        return sorted_values[percentile]
 
     def count(self, values):
         return len(values)

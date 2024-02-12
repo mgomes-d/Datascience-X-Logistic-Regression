@@ -35,14 +35,10 @@ def main():
 
         #Iterate through the Dataframe columns and plot histograms with distinct colors
         for i, (column, ax) in enumerate(zip(data.columns, axes_flat)):
-            data[column].plot.hist(ax=ax, bins=15, alpha=0.7, color=colors[i], edgecolor='black')
+            data[column].plot.hist(ax=ax, bins=15, color=colors[i], edgecolor='black')
             ax.set_title(f'{column}', fontsize = 7)
             ax.set_xlabel("score", fontsize = 7)
             ax.set_ylabel("students", fontsize = 7)
-        # Remove any extra empty subplots if the number of variable is less than 16
-        if i < num_histograms - 1:
-            for j in range(i + 1, num_histograms):
-                fig.delaxes(axes_flat[j])
         # Adjust layout and display the plot
         plt.tight_layout()
         plt.show()

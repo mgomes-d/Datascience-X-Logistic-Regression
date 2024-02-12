@@ -21,10 +21,7 @@ def main():
         colors = plt.cm.tab20.colors[:num_scatter]
         for i, column in enumerate(data.columns[1:]):
             plt.scatter(data[column].index.values, data[column].values, color = colors[i], label=column)
-        plt.ylabel("Score")
-        plt.xlabel("Students")
-        plt.title("Scatter Plot")
-        plt.legend(loc="lower right")
+        plt.legend(loc="upper left")
         plt.show()
 
     except Exception as msg:

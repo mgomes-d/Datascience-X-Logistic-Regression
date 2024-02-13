@@ -35,4 +35,4 @@ if __name__ == "__main__":
     if len(sys.argv) == 2:
         main()
     else:
-        print("Wrong argument: histogram.py dataset.csv")
+        print("Wrong argument: scatter_plot.py dataset.csv")

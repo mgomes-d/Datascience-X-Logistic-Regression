@@ -72,7 +72,7 @@ import matplotlib.pyplot as plt
 data_train = pd.read_csv("datasets/dataset_train.csv")
 
 # Créer le pair plot ou la matrice de scatter plot
-pair_plot = sns.pairplot(data_train.drop(['Index', 'First Name', 'Last Name', 'Birthday'], axis=1), hue='Hogwarts House')
+pair_plot = sns.pairplot(data_train.drop(['Index', 'First Name', 'Last Name', 'Birthday'], axis=1), hue='Hogwarts House', height=1)
 
 # Identifier les caractéristiques pertinentes pour la régression logistique
 features_for_logistic_regression = ['Arithmancy', 'Astronomy', 'Herbology', 'Defense Against the Dark Arts', 'Divination',

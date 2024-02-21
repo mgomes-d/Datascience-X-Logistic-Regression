@@ -3,28 +3,36 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import sys
 
+class GradientDescent:
+    def __init_(self):
+        self.x = 0
+
+class LogisticRegression:
+    def __init__(self):
+        self.x = 0
+
 def load_csv(path: str) -> pd.DataFrame:
     assert path.lower().endswith(".csv"), "Path in wrong format, .csv"
     df = pd.read_csv(path)
     return df
 
+def parse_data(df):
+    data = df.drop(["Index","First Name","Last Name","Birthday","Best Hand", "Potions", "Arithmancy", "Care of Magical Creatures"], axis=1)
+    return data
+
 def main():
     try:
         # Charger les données
         data_train = load_csv(sys.argv[1])
-
-        # Créer le pair plot ou la matrice de scatter plot
-        pair_plot = sns.pairplot(data_train.drop(['Index', 'First Name', 'Last Name', 'Birthday'], axis=1), hue='Hogwarts House', height=1)
-
-        # Afficher le pair plot
-        plt.show()
+        data_parsed = parse_data(data_train)
+        print(data_parsed)
 
     except Exception as msg:
         print(msg)
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2:
+    if len(sys.argv) == 2 and sys.argv[1].endswith("dataset_train.csv") is True:
         main()
     else:
         print("Wrong argument: logreg_train.py dataset_train.csv")

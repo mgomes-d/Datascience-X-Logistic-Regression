@@ -8,8 +8,14 @@ class GradientDescent:
         self.x = 0
 
 class LogisticRegression:
-    def __init__(self):
+    def __init__(self, df):
         self.x = 0
+        self.df = stand_input_data(df)
+
+    def stand_input_data(self, df):
+        data = df
+        return data
+
 
 def load_csv(path: str) -> pd.DataFrame:
     assert path.lower().endswith(".csv"), "Path in wrong format, .csv"
@@ -25,6 +31,7 @@ def main():
         # Charger les données
         data_train = load_csv(sys.argv[1])
         data_parsed = parse_data(data_train)
+        logistic_regression = LogisticRegression()
         print(data_parsed)
 
     except Exception as msg:

@@ -2,14 +2,18 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import sys
+import numpy as np
 
 class GradientDescent:
     def __init_(self):
         self.x = 0
 
 class LogisticRegression:
-    def __init__(self):
+    def __init__(self, df):
         self.x = 0
+        self.df = df
+
+    # def standarisation(self, df)
 
 def load_csv(path: str) -> pd.DataFrame:
     assert path.lower().endswith(".csv"), "Path in wrong format, .csv"
@@ -17,7 +21,7 @@ def load_csv(path: str) -> pd.DataFrame:
     return df
 
 def parse_data(df):
-    data = df.drop(["Index","First Name","Last Name","Birthday","Best Hand", "Potions", "Arithmancy", "Care of Magical Creatures"], axis=1)
+    data = df.drop(["Index","First Name","Last Name","Birthday","Best Hand", "Potions", "Arithmancy", "Care of Magical Creatures"], axis=1).replace([np.nan], 0)
     return data
 
 def main():
@@ -26,6 +30,7 @@ def main():
         data_train = load_csv(sys.argv[1])
         data_parsed = parse_data(data_train)
         print(data_parsed)
+        # logisticReg = LogisticRegression(data_parsed)
 
     except Exception as msg:
         print(msg)

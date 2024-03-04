@@ -22,6 +22,12 @@ class LogisticRegression:
             data[column_name] = data[column_name].apply(lambda x: (x - self.means[column_name]) / self.std[column_name])
         return data
 
+    def training(self, training_step=0.01, training_iterations=10):
+        for _ in range(training_iterations):
+            print("hell")
+            # print()
+    def sigmoid(x):
+        return 1 / (1 + np.exp(-x))
 
 def load_csv(path: str) -> pd.DataFrame:
     assert path.lower().endswith(".csv"), "Path in wrong format, .csv"
@@ -39,7 +45,7 @@ def main():
         data_parsed = parse_data(data_train)
         # print(data_parsed)
         logistic_regression = LogisticRegression(data_parsed)
-        # logisticReg = LogisticRegression(data_parsed)
+        logistic_regression.training()
 
     except Exception as msg:
         print(msg, "ddf")

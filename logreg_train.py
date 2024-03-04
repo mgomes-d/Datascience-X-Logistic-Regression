@@ -20,13 +20,31 @@ class LogisticRegression:
             self.means[column_name] = 1 / content.size * content.values.sum()
             self.std[column_name] = (content.apply(lambda x: (x - self.means[column_name])**2).values.sum() / content.size)**0.5
             data[column_name] = data[column_name].apply(lambda x: (x - self.means[column_name]) / self.std[column_name])
+        # data.loc[data['Hogwarts House'] == 'Ravenclaw', 'Hogwarts House'] = 0
+        # data.loc[data['Hogwarts House'] == 'Slytherin', 'Hogwarts House'] = 1
+        # data.loc[data['Hogwarts House'] == 'Gryffindor', 'Hogwarts House'] = 2
+        # data.loc[data['Hogwarts House'] == 'Hufflepuff', 'Hogwarts House'] = 3
+        # print(data)
         return data
 
-    def training(self, training_step=0.01, training_iterations=10):
+    def training(self, training_step=0.01, training_iterations=1):
         for _ in range(training_iterations):
-            print("hell")
-            # print()
-    def sigmoid(x):
+            print(self.df)
+            ravenclaw_df = self.df.copy()
+            ravenclaw_df.loc[ravenclaw_df['Hogwarts House'] == 'Ravenclaw', 'Hogwarts House'] = 1
+            ravenclaw_df.loc[ravenclaw_df['Hogwarts House'] != 1, 'Hogwarts House'] = 0
+            print(ravenclaw_df)
+            # self.single_classification(ravenclaw_df)
+            # loss_value = (1 / len(df.columns)) * (ravenclaw_df.apply()).sum()
+        print("loss_value")
+    
+    def single_classification(self, df):
+        theta_values = np.zeros(len(df.columns))
+        # for column, theta in zip(df, theta_values):
+            # df[column] = df[column].apply(lambda x: self.sigmoid(x * theta))
+            # print(f'column{column}, theta{theta}, logistic{logistic}')
+
+    def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
 
 def load_csv(path: str) -> pd.DataFrame:

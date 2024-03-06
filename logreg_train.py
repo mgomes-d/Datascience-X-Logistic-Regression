@@ -27,22 +27,37 @@ class LogisticRegression:
         # print(data)
         return data
 
-    def training(self, training_step=0.01, training_iterations=1):
+    def training(self, step_size=0.01, training_iterations=1):
+        theta_values = np.zeros(len(self.df.columns) - 1)
         for _ in range(training_iterations):
-            print(self.df)
+            # print(self.df)
             ravenclaw_df = self.df.copy()
             ravenclaw_df.loc[ravenclaw_df['Hogwarts House'] == 'Ravenclaw', 'Hogwarts House'] = 1
             ravenclaw_df.loc[ravenclaw_df['Hogwarts House'] != 1, 'Hogwarts House'] = 0
-            print(ravenclaw_df)
-            # self.single_classification(ravenclaw_df)
+            self.binary_classification(ravenclaw_df, theta_values)
+            # print(ravenclaw_df)
             # loss_value = (1 / len(df.columns)) * (ravenclaw_df.apply()).sum()
         print("loss_value")
     
-    def single_classification(self, df):
-        theta_values = np.zeros(len(df.columns))
-        # for column, theta in zip(df, theta_values):
-            # df[column] = df[column].apply(lambda x: self.sigmoid(x * theta))
-            # print(f'column{column}, theta{theta}, logistic{logistic}')
+    def binary_classification(self, df, theta_values):
+        Y = df["Hogwarts House"]
+        X = df.drop("Hogwarts House", axis=1, inplace=False)
+        temp_theta = theta_values.copy()
+        m = len(X.values)
+        print(m)
+        predictions = X.apply(lambda x: self.model_prediction(theta_values.T, x.values), axis=1)
+        for i, (theta, column_name) in enumerate(zip(temp_theta, X)):
+            calcul_sum = 0
+            for j, (predict, value) in enumerate(zip(predictions, Y)):
+                calcul_sum += (predict - value) * X[column_name][j]
+            print((1 / m) * calcul_sum)
+            derivative = (1 / m) * calcul_sum
+            temp_theta[i] = derivative
+
+        print(temp_theta)
+
+    def model_prediction(self, theta, x):
+        return self.sigmoid((theta * x).sum())
 
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
@@ -66,7 +81,7 @@ def main():
         logistic_regression.training()
 
     except Exception as msg:
-        print(msg, "ddf")
+        print(msg, "Error")
 
 
 if __name__ == "__main__":

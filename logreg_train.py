@@ -27,7 +27,7 @@ class LogisticRegression:
         # print(data)
         return data
 
-    def training(self, step_size=0.01, training_iterations=50):
+    def training(self, step_size=0.1, training_iterations=100):
         theta_values = np.zeros(len(self.df.columns) - 1)
         theta_bias = np.zeros(1)
         # for _ in range(training_iterations):
@@ -44,13 +44,13 @@ class LogisticRegression:
         hufflepuff_df = self.df.copy()
         hufflepuff_df.loc[hufflepuff_df['Hogwarts House'] == 'Hufflepuff', 'Hogwarts House'] = 1
         hufflepuff_df.loc[hufflepuff_df['Hogwarts House'] != 1, 'Hogwarts House'] = 0
-        self.binary_classification(ravenclaw_df, training_iterations, theta_values, theta_bias)
-        self.binary_classification(slytherin_df, training_iterations, theta_values, theta_bias)
-        self.binary_classification(gryffindor_df, training_iterations, theta_values, theta_bias)
-        self.binary_classification(hufflepuff_df, training_iterations, theta_values, theta_bias)
+        self.binary_classification(ravenclaw_df, training_iterations, theta_values, step_size, theta_bias)
+        self.binary_classification(slytherin_df, training_iterations, theta_values, step_size, theta_bias)
+        self.binary_classification(gryffindor_df, training_iterations, theta_values, step_size, theta_bias)
+        self.binary_classification(hufflepuff_df, training_iterations, theta_values, step_size, theta_bias)
         print("loss_value")
     
-    def binary_classification(self, df, training_iterations, theta_values, theta_bias):
+    def binary_classification(self, df, training_iterations, theta_values, step_size, theta_bias):
         Y = df["Hogwarts House"]
         X = df.drop("Hogwarts House", axis=1, inplace=False)
         temp_theta = theta_values.copy()
@@ -65,8 +65,8 @@ class LogisticRegression:
                     calcul_sum += (predict - value) * X[column_name][j]
                 derivative = (1 / m) * calcul_sum
                 temp_theta[i] = derivative
-            theta_values -= 0.20 * temp_theta
-            theta_bias -= 0.20 * temp_theta_bias
+            theta_values -= step_size * temp_theta
+            theta_bias -= step_size * temp_theta_bias
         print(predictions)
         print(Y)
         print(theta_values, theta_bias)

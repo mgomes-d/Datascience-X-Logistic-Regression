@@ -27,37 +27,37 @@ class LogisticRegression:
         # print(data)
         return data
 
-    def training(self, step_size=0.1, training_iterations=100):
-        theta_values = np.zeros(len(self.df.columns) - 1)
-        theta_bias = np.zeros(1)
-        # for _ in range(training_iterations):
-            # print(self.df)
+    def training(self, step_size=0.1, training_iterations=200):
         ravenclaw_df = self.df.copy()
         ravenclaw_df.loc[ravenclaw_df['Hogwarts House'] == 'Ravenclaw', 'Hogwarts House'] = 1
         ravenclaw_df.loc[ravenclaw_df['Hogwarts House'] != 1, 'Hogwarts House'] = 0
-        slytherin_df = self.df.copy()
-        slytherin_df.loc[slytherin_df['Hogwarts House'] == 'Slytherin', 'Hogwarts House'] = 1
-        slytherin_df.loc[slytherin_df['Hogwarts House'] != 1, 'Hogwarts House'] = 0
-        gryffindor_df = self.df.copy()
-        gryffindor_df.loc[gryffindor_df['Hogwarts House'] == 'Gryffindor', 'Hogwarts House'] = 1
-        gryffindor_df.loc[gryffindor_df['Hogwarts House'] != 1, 'Hogwarts House'] = 0
-        hufflepuff_df = self.df.copy()
-        hufflepuff_df.loc[hufflepuff_df['Hogwarts House'] == 'Hufflepuff', 'Hogwarts House'] = 1
-        hufflepuff_df.loc[hufflepuff_df['Hogwarts House'] != 1, 'Hogwarts House'] = 0
-        self.binary_classification(ravenclaw_df, training_iterations, theta_values, step_size, theta_bias)
-        self.binary_classification(slytherin_df, training_iterations, theta_values, step_size, theta_bias)
-        self.binary_classification(gryffindor_df, training_iterations, theta_values, step_size, theta_bias)
-        self.binary_classification(hufflepuff_df, training_iterations, theta_values, step_size, theta_bias)
+        # slytherin_df = self.df.copy()
+        # slytherin_df.loc[slytherin_df['Hogwarts House'] == 'Slytherin', 'Hogwarts House'] = 1
+        # slytherin_df.loc[slytherin_df['Hogwarts House'] != 1, 'Hogwarts House'] = 0
+        # gryffindor_df = self.df.copy()
+        # gryffindor_df.loc[gryffindor_df['Hogwarts House'] == 'Gryffindor', 'Hogwarts House'] = 1
+        # gryffindor_df.loc[gryffindor_df['Hogwarts House'] != 1, 'Hogwarts House'] = 0
+        # hufflepuff_df = self.df.copy()
+        # hufflepuff_df.loc[hufflepuff_df['Hogwarts House'] == 'Hufflepuff', 'Hogwarts House'] = 1
+        # hufflepuff_df.loc[hufflepuff_df['Hogwarts House'] != 1, 'Hogwarts House'] = 0
+        ravenclaw_theta = self.binary_classification(ravenclaw_df, training_iterations, step_size)
+        # self.binary_classification(slytherin_df, training_iterations, step_size)
+        # self.binary_classification(gryffindor_df, training_iterations, step_size)
+        # self.binary_classification(hufflepuff_df, training_iterations, step_size)
         print("loss_value")
     
-    def binary_classification(self, df, training_iterations, theta_values, step_size, theta_bias):
+    def binary_classification(self, df, training_iterations, step_size):
         Y = df["Hogwarts House"]
         X = df.drop("Hogwarts House", axis=1, inplace=False)
-        temp_theta = theta_values.copy()
-        temp_theta_bias = theta_bias.copy()
+        theta_values = np.zeros(len(df.columns))
+        temp_theta =  np.zeros(len(X.columns))
+        temp_theta_bias = np.zeros(1)
         m = len(X.values)
+        # print(theta_values[1:])
         for _ in range(training_iterations):
-            predictions = X.apply(lambda x: self.model_prediction(theta_values.T, x.values, theta_bias), axis=1)
+            # print(X)
+            # print(theta_values.T)
+            predictions = X.apply(lambda x: self.model_prediction(theta_values[1:].T, x.values, theta_values[0]), axis=1)
             temp_theta_bias = (1 / m) * (predictions - Y).sum()
             for i, (theta, column_name) in enumerate(zip(temp_theta, X)):
                 calcul_sum = 0
@@ -65,14 +65,14 @@ class LogisticRegression:
                     calcul_sum += (predict - value) * X[column_name][j]
                 derivative = (1 / m) * calcul_sum
                 temp_theta[i] = derivative
-            theta_values -= step_size * temp_theta
-            theta_bias -= step_size * temp_theta_bias
+            theta_values[1:] -= step_size * temp_theta
+            theta_values[0] -= step_size * temp_theta_bias
         print(predictions)
         print(Y)
-        print(theta_values, theta_bias)
+        return theta_values
 
-    def model_prediction(self, theta, x, theta_bias):
-        return self.sigmoid(theta_bias + (theta * x).sum())
+    def model_prediction(self, theta, x, bias):
+        return self.sigmoid(bias + (theta * x).sum())
 
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))

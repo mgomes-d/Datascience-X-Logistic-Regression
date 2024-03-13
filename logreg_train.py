@@ -79,15 +79,17 @@ class LogisticRegression:
         return 1 / (1 + np.exp(-x))
 
     def store_parameters(self, ravenclaw_theta, slytherin_theta, gryffindor_theta, hufflepuff_theta):
-        data = [[ravenclaw_theta, "Ravenclaw"], [slytherin_theta, "Slytherin"], \
-                [gryffindor_theta, "Gryffindor"], [hufflepuff_theta, "Hufflepuff"]]
+        data = {"Ravenclaw": ravenclaw_theta, "Slytherin": slytherin_theta, \
+                "Gryffindor": gryffindor_theta, "Hufflepuff": hufflepuff_theta}
+        # print(data["Ravenclaw"])
         theta_df = pd.DataFrame(data)
-        theta_df = theta_df.set_index(theta_df[1])
-        theta_df = theta_df.drop(1, axis=1)
-        theta_df.columns = ["theta_values"]
-        theta_df = theta_df.rename_axis(index={1: 'Hogwarts House'})
         print(theta_df)
-        theta_df.to_csv("parameters.csv")
+        # theta_df = theta_df.set_index(theta_df[1])
+        # theta_df = theta_df.drop(1, axis=1)
+        # theta_df.columns = ["theta_values"]
+        # theta_df = theta_df.rename_axis(index={1: 'Hogwarts House'})
+        # print(theta_df.values)
+        theta_df.to_csv("parameters.csv", index=False)
 
 def load_csv(path: str) -> pd.DataFrame:
     assert path.lower().endswith(".csv"), "Path in wrong format, .csv"

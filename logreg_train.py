@@ -20,14 +20,10 @@ class LogisticRegression:
             self.means[column_name] = 1 / content.size * content.values.sum()
             self.std[column_name] = (content.apply(lambda x: (x - self.means[column_name])**2).values.sum() / content.size)**0.5
             data[column_name] = data[column_name].apply(lambda x: (x - self.means[column_name]) / self.std[column_name])
-        # data.loc[data['Hogwarts House'] == 'Ravenclaw', 'Hogwarts House'] = 0
-        # data.loc[data['Hogwarts House'] == 'Slytherin', 'Hogwarts House'] = 1
-        # data.loc[data['Hogwarts House'] == 'Gryffindor', 'Hogwarts House'] = 2
-        # data.loc[data['Hogwarts House'] == 'Hufflepuff', 'Hogwarts House'] = 3
-        # print(data)
+        # print(self.means,"\n", self.std)
         return data
 
-    def training(self, step_size=0.1, training_iterations=2):
+    def training(self, step_size=0.1, training_iterations=1):
         ravenclaw_df = self.df.copy()
         ravenclaw_df.loc[ravenclaw_df['Hogwarts House'] == 'Ravenclaw', 'Hogwarts House'] = 1
         ravenclaw_df.loc[ravenclaw_df['Hogwarts House'] != 1, 'Hogwarts House'] = 0
@@ -44,6 +40,7 @@ class LogisticRegression:
         slytherin_theta = self.binary_classification(slytherin_df, training_iterations, step_size)
         gryffindor_theta = self.binary_classification(gryffindor_df, training_iterations, step_size)
         hufflepuff_theta = self.binary_classification(hufflepuff_df, training_iterations, step_size)
+        self.denormalize_data(ravenclaw_theta)
         self.store_parameters(ravenclaw_theta, slytherin_theta, gryffindor_theta, hufflepuff_theta)
         # print(ravenclaw_theta)
             
@@ -83,13 +80,23 @@ class LogisticRegression:
                 "Gryffindor": gryffindor_theta, "Hufflepuff": hufflepuff_theta}
         # print(data["Ravenclaw"])
         theta_df = pd.DataFrame(data)
-        print(theta_df)
+        # print(theta_df)
         # theta_df = theta_df.set_index(theta_df[1])
         # theta_df = theta_df.drop(1, axis=1)
         # theta_df.columns = ["theta_values"]
         # theta_df = theta_df.rename_axis(index={1: 'Hogwarts House'})
         # print(theta_df.values)
         theta_df.to_csv("parameters.csv", index=False)
+    
+    def denormalize_data(self, theta_values):
+        denormalized_data = theta_values.copy()
+        for (column_name, mean), value in zip(self.means.items(), denormalized_data):
+            print(column_name, mean)
+            print(self.std[column_name])
+            print(value)
+            value = 10
+        print(denormalized_data)
+        # print(theta_values)
 
 def load_csv(path: str) -> pd.DataFrame:
     assert path.lower().endswith(".csv"), "Path in wrong format, .csv"

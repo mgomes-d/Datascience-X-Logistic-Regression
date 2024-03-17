@@ -4,10 +4,6 @@ import matplotlib.pyplot as plt
 import sys
 import numpy as np
 
-# class GradientDescent:
-#     def __init_(self):
-#         self.x = 0
-
 class LogisticRegression:
     def __init__(self, df):
         self.df = self.stand_input_data(df)
@@ -16,6 +12,8 @@ class LogisticRegression:
         data = df.copy()
         self.means = {}
         self.std = {}
+        self.means["theta0"] = 0
+        self.std["theta0"] = 0
         for column_name, content in data.drop("Hogwarts House", axis=1, inplace=False).items():
             self.means[column_name] = 1 / content.size * content.values.sum()
             self.std[column_name] = (content.apply(lambda x: (x - self.means[column_name])**2).values.sum() / content.size)**0.5
@@ -23,7 +21,7 @@ class LogisticRegression:
         # print(self.means,"\n", self.std)
         return data
 
-    def training(self, step_size=0.1, training_iterations=1):
+    def training(self, step_size=0.1, training_iterations=200):
         ravenclaw_df = self.df.copy()
         ravenclaw_df.loc[ravenclaw_df['Hogwarts House'] == 'Ravenclaw', 'Hogwarts House'] = 1
         ravenclaw_df.loc[ravenclaw_df['Hogwarts House'] != 1, 'Hogwarts House'] = 0
@@ -40,7 +38,10 @@ class LogisticRegression:
         slytherin_theta = self.binary_classification(slytherin_df, training_iterations, step_size)
         gryffindor_theta = self.binary_classification(gryffindor_df, training_iterations, step_size)
         hufflepuff_theta = self.binary_classification(hufflepuff_df, training_iterations, step_size)
-        self.denormalize_data(ravenclaw_theta)
+        # self.denormalize_data(ravenclaw_theta)
+        # self.denormalize_data(slytherin_theta)
+        # self.denormalize_data(gryffindor_theta)
+        # self.denormalize_data(hufflepuff_theta)
         self.store_parameters(ravenclaw_theta, slytherin_theta, gryffindor_theta, hufflepuff_theta)
         # print(ravenclaw_theta)
             
@@ -77,7 +78,8 @@ class LogisticRegression:
 
     def store_parameters(self, ravenclaw_theta, slytherin_theta, gryffindor_theta, hufflepuff_theta):
         data = {"Ravenclaw": ravenclaw_theta, "Slytherin": slytherin_theta, \
-                "Gryffindor": gryffindor_theta, "Hufflepuff": hufflepuff_theta}
+                "Gryffindor": gryffindor_theta, "Hufflepuff": hufflepuff_theta, \
+                "mean": self.means.values(), "std": self.std.values()}
         # print(data["Ravenclaw"])
         theta_df = pd.DataFrame(data)
         # print(theta_df)
@@ -88,15 +90,16 @@ class LogisticRegression:
         # print(theta_df.values)
         theta_df.to_csv("parameters.csv", index=False)
     
-    def denormalize_data(self, theta_values):
-        denormalized_data = theta_values.copy()
-        for (column_name, mean), value in zip(self.means.items(), denormalized_data):
-            print(column_name, mean)
-            print(self.std[column_name])
-            print(value)
-            value = 10
-        print(denormalized_data)
-        # print(theta_values)
+    # def denormalize_data(self, theta_values):
+    #     # denormalized_data = theta_values.copy()
+    #     # print(theta_values)
+    #     for i, column_name in enumerate(self.means):
+    #         mean = self.means[column_name]
+    #         std = self.std[column_name]
+    #         theta_values[i] *= std + mean
+    #         # print(mean, std)
+    #     # print(denormalized_data)
+    #     # print(theta_values)
 
 def load_csv(path: str) -> pd.DataFrame:
     assert path.lower().endswith(".csv"), "Path in wrong format, .csv"

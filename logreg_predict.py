@@ -22,18 +22,22 @@ class Predict_price:
 
 
     def prediction(self):
+        predictions = {}
         for column, theta_value in self.parameters_df.items():
-            # print(theta_value)
-            self.binary_classification(theta_value.values.astype(float), self.predict_data_df.iloc[0].values.astype(float))
-            break
+            predictions[column] = self.binary_classification(theta_value.values.astype(float), self.predict_data_df.values.astype(float))
 
-        # print(predict_data_df.iloc[0].values.astype(float))
+        # for i in range(predictions)
+        print(len(self.predict_data_df.iloc[0]))
 
     # def predict_one_value()
 
     def binary_classification(self, theta, values):
-        test= do after at campus
-        result = sigmoid(test)
+        result = []
+        for value in values:
+            sum_prediction = theta[0] + (theta[1:] * value).sum()
+            sig_prediction = sigmoid(sum_prediction)
+            result.append(sig_prediction)
+        return result
 
 def load_file(path: str) -> pd.DataFrame:
     assert path.lower().endswith(".csv"), "Path need to end with .csv"

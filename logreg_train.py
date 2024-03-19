@@ -21,7 +21,7 @@ class LogisticRegression:
             data[column_name] = data[column_name].apply(lambda x: (x - self.means[column_name]) / self.std[column_name])
         return data
 
-    def training(self, step_size=0.1, training_iterations=200):
+    def training(self, step_size=0.09, training_iterations=500):
         ravenclaw_df = self.df.copy()
         ravenclaw_df.loc[ravenclaw_df['Hogwarts House'] == 'Ravenclaw', 'Hogwarts House'] = 1
         ravenclaw_df.loc[ravenclaw_df['Hogwarts House'] != 1, 'Hogwarts House'] = 0

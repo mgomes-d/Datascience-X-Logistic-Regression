@@ -3,6 +3,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import sys
 import numpy as np
+from utils import load_csv
 
 class LogisticRegression:
     def __init__(self, df):
@@ -72,11 +73,6 @@ class LogisticRegression:
         theta_df = pd.DataFrame(data)
         theta_df.to_csv("parameters.csv", index=False)
     
-def load_csv(path: str) -> pd.DataFrame:
-    assert path.lower().endswith(".csv"), "Path in wrong format, .csv"
-    df = pd.read_csv(path)
-    return df
-
 def parse_data(df):
     data = df.drop(["Index","First Name","Last Name","Birthday","Best Hand", "Potions", "Arithmancy", "Care of Magical Creatures"], axis=1).replace([np.nan], 0)
     return data

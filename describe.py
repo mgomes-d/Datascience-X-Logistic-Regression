@@ -2,12 +2,7 @@ import sys
 import csv
 import pandas as pd
 import numpy as np
-
-def load_csv(path: str) -> pd.DataFrame:
-    assert path.lower().endswith(".csv"), "Path in wrong format, .csv"
-    df = pd.read_csv(path)
-    return df
-
+from utils import load_csv
 
 class Describe:
     def __init__(self, path: str):

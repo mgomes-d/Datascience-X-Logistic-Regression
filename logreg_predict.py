@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from utils import load_csv
 
 class Predict_price:
     def __init__(self, parameters_df, predict_data_df):
@@ -46,18 +47,13 @@ class Predict_price:
         df.rename_axis('Index', inplace=True)
         df.to_csv("houses.csv", index=True)
 
-def load_file(path: str) -> pd.DataFrame:
-    assert path.lower().endswith(".csv"), "Path need to end with .csv"
-    df = pd.read_csv(path)
-    return df
-
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
 def main():
     try:
-        parameters_df = load_file("parameters.csv")
-        predict_data_df = load_file("datasets/dataset_test.csv")
+        parameters_df = load_csv("parameters.csv")
+        predict_data_df = load_csv("datasets/dataset_test.csv")
         prediction = Predict_price(parameters_df, predict_data_df)
         predictions_values = prediction.prediction()
         prediction.create_file(predictions_values)

@@ -2,11 +2,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import sys
-
-def load_csv(path: str) -> pd.DataFrame:
-    assert path.lower().endswith(".csv"), "Path in wrong format, .csv"
-    df = pd.read_csv(path)
-    return df
+from utils import load_csv
 
 def main():
     try:

@@ -18,7 +18,6 @@ class LogisticRegression:
             self.means[column_name] = 1 / content.size * content.values.sum()
             self.std[column_name] = (content.apply(lambda x: (x - self.means[column_name])**2).values.sum() / content.size)**0.5
             data[column_name] = data[column_name].apply(lambda x: (x - self.means[column_name]) / self.std[column_name])
-        # print(self.means,"\n", self.std)
         return data
 
     def training(self, step_size=0.1, training_iterations=200):
@@ -38,12 +37,7 @@ class LogisticRegression:
         slytherin_theta = self.binary_classification(slytherin_df, training_iterations, step_size)
         gryffindor_theta = self.binary_classification(gryffindor_df, training_iterations, step_size)
         hufflepuff_theta = self.binary_classification(hufflepuff_df, training_iterations, step_size)
-        # self.denormalize_data(ravenclaw_theta)
-        # self.denormalize_data(slytherin_theta)
-        # self.denormalize_data(gryffindor_theta)
-        # self.denormalize_data(hufflepuff_theta)
         self.store_parameters(ravenclaw_theta, slytherin_theta, gryffindor_theta, hufflepuff_theta)
-        # print(ravenclaw_theta)
             
     def binary_classification(self, df, training_iterations, step_size):
         Y = df["Hogwarts House"]
@@ -52,10 +46,7 @@ class LogisticRegression:
         temp_theta =  np.zeros(len(X.columns))
         temp_theta_bias = np.zeros(1)
         m = len(X.values)
-        # print(theta_values[1:])
         for _ in range(training_iterations):
-            # print(X)
-            # print(theta_values.T)
             predictions = X.apply(lambda x: self.model_prediction(theta_values[1:].T, x.values, theta_values[0]), axis=1)
             temp_theta_bias = (1 / m) * (predictions - Y).sum()
             for i, (theta, column_name) in enumerate(zip(temp_theta, X)):
@@ -66,8 +57,6 @@ class LogisticRegression:
                 temp_theta[i] = derivative
             theta_values[1:] -= step_size * temp_theta
             theta_values[0] -= step_size * temp_theta_bias
-        # print(predictions)
-        # print(Y)
         return theta_values
 
     def model_prediction(self, theta, x, bias):
@@ -80,27 +69,9 @@ class LogisticRegression:
         data = {"Ravenclaw": ravenclaw_theta, "Slytherin": slytherin_theta, \
                 "Gryffindor": gryffindor_theta, "Hufflepuff": hufflepuff_theta, \
                 "mean": self.means.values(), "std": self.std.values()}
-        # print(data["Ravenclaw"])
         theta_df = pd.DataFrame(data)
-        # print(theta_df)
-        # theta_df = theta_df.set_index(theta_df[1])
-        # theta_df = theta_df.drop(1, axis=1)
-        # theta_df.columns = ["theta_values"]
-        # theta_df = theta_df.rename_axis(index={1: 'Hogwarts House'})
-        # print(theta_df.values)
         theta_df.to_csv("parameters.csv", index=False)
     
-    # def denormalize_data(self, theta_values):
-    #     # denormalized_data = theta_values.copy()
-    #     # print(theta_values)
-    #     for i, column_name in enumerate(self.means):
-    #         mean = self.means[column_name]
-    #         std = self.std[column_name]
-    #         theta_values[i] *= std + mean
-    #         # print(mean, std)
-    #     # print(denormalized_data)
-    #     # print(theta_values)
-
 def load_csv(path: str) -> pd.DataFrame:
     assert path.lower().endswith(".csv"), "Path in wrong format, .csv"
     df = pd.read_csv(path)
@@ -112,10 +83,8 @@ def parse_data(df):
 
 def main():
     try:
-        # Charger les données
         data_train = load_csv(sys.argv[1])
         data_parsed = parse_data(data_train)
-        # print(data_parsed)
         logistic_regression = LogisticRegression(data_parsed)
         logistic_regression.training()
 

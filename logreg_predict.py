@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 
-
 class Predict_price:
     def __init__(self, parameters_df, predict_data_df):
         self.parameters_df = parameters_df
@@ -18,18 +17,21 @@ class Predict_price:
         for i, (column_name, values) in enumerate(self.predict_data_df.items()):
             self.predict_data_df[column_name] = values.apply(lambda x: (x - self.means[i]) / self.std[i])
 
-    # def denormalize_data(self)
-
-
     def prediction(self):
         predictions = {}
         for column, theta_value in self.parameters_df.items():
             predictions[column] = self.binary_classification(theta_value.values.astype(float), self.predict_data_df.values.astype(float))
 
-        # for i in range(predictions)
-        print(len(self.predict_data_df.iloc[0]))
-
-    # def predict_one_value()
+        list_of_lists = [list(values) for values in predictions.values()]
+        list_of_lists = list(map(list, zip(*list_of_lists)))
+        predict_index = []
+        for values in list_of_lists:
+            predict_index.append(np.argmax(values))
+        list_of_houses = list(predictions.keys())
+        predict_str = []
+        for value in predict_index:
+            predict_str.append(list_of_houses[value])
+        return predict_str
 
     def binary_classification(self, theta, values):
         result = []
@@ -38,6 +40,11 @@ class Predict_price:
             sig_prediction = sigmoid(sum_prediction)
             result.append(sig_prediction)
         return result
+
+    def create_file(self, list_predict):
+        df = pd.DataFrame(list_predict, columns=['Hogwarts House'])
+        df.rename_axis('Index', inplace=True)
+        df.to_csv("houses.csv", index=True)
 
 def load_file(path: str) -> pd.DataFrame:
     assert path.lower().endswith(".csv"), "Path need to end with .csv"
@@ -52,9 +59,10 @@ def main():
         parameters_df = load_file("parameters.csv")
         predict_data_df = load_file("datasets/dataset_test.csv")
         prediction = Predict_price(parameters_df, predict_data_df)
-        prediction.prediction()
-        # predict = df["theta0"].values.astype(float) + (df["theta1"].values.astype(float) * float(value))
-        # print("Estimate price =",predict[0])
+        predictions_values = prediction.prediction()
+        prediction.create_file(predictions_values)
+
+
     except Exception as msg:
         print(msg)
 

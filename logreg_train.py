@@ -1,14 +1,16 @@
 import pandas as pd
-import seaborn as sns
+import numpy as np
 import matplotlib.pyplot as plt
 import sys
-import numpy as np
 from utils import load_csv
+import time
 
 class LogisticRegression:
-    def __init__(self, df):
+    def __init__(self, df, chart=False):
         self.df = self.stand_input_data(df)
-
+        self.chart = chart
+        if chart is True:
+            self.show_chart()
     def stand_input_data(self, df):
         data = df.copy()
         self.means = {}
@@ -21,7 +23,7 @@ class LogisticRegression:
             data[column_name] = data[column_name].apply(lambda x: (x - self.means[column_name]) / self.std[column_name])
         return data
 
-    def training(self, step_size=0.09, training_iterations=500):
+    def training(self, step_size=0.09, training_iterations=1):
         ravenclaw_df = self.df.copy()
         ravenclaw_df.loc[ravenclaw_df['Hogwarts House'] == 'Ravenclaw', 'Hogwarts House'] = 1
         ravenclaw_df.loc[ravenclaw_df['Hogwarts House'] != 1, 'Hogwarts House'] = 0
@@ -39,7 +41,7 @@ class LogisticRegression:
         gryffindor_theta = self.binary_classification(gryffindor_df, training_iterations, step_size)
         hufflepuff_theta = self.binary_classification(hufflepuff_df, training_iterations, step_size)
         self.store_parameters(ravenclaw_theta, slytherin_theta, gryffindor_theta, hufflepuff_theta)
-            
+    
     def binary_classification(self, df, training_iterations, step_size):
         Y = df["Hogwarts House"]
         X = df.drop("Hogwarts House", axis=1, inplace=False)
@@ -58,7 +60,11 @@ class LogisticRegression:
                 temp_theta[i] = derivative
             theta_values[1:] -= step_size * temp_theta
             theta_values[0] -= step_size * temp_theta_bias
+            print(predictions)
         return theta_values
+
+    def cost_function(self, fun_h):
+        print(fun_h)
 
     def model_prediction(self, theta, x, bias):
         return self.sigmoid(bias + (theta * x).sum())
@@ -72,6 +78,17 @@ class LogisticRegression:
                 "mean": self.means.values(), "std": self.std.values()}
         theta_df = pd.DataFrame(data)
         theta_df.to_csv("parameters.csv", index=False)
+
+    def show_chart(self):
+        # fig = plt.figure(figsize=(8, 6))
+        # ax = fig.add_subplot(111)
+        # x_data = [1, 2, 3]
+        y_data = [4, 5, 6]
+
+        # # Créer le graphique initial avec les données initiales
+        # plt.plot(x_data, y_data, 'bo')
+        # plt.show(block=False)
+        #show
     
 def parse_data(df):
     data = df.drop(["Index","First Name","Last Name","Birthday","Best Hand", "Potions", "Arithmancy", "Care of Magical Creatures"], axis=1).replace([np.nan], 0)
@@ -81,7 +98,19 @@ def main():
     try:
         data_train = load_csv(sys.argv[1])
         data_parsed = parse_data(data_train)
-        logistic_regression = LogisticRegression(data_parsed)
+        # x_data = [1, 2, 3]
+        # y_data = [4, 5, 6]
+
+        # Créer le graphique initial avec les données initiales
+        # plt.plot(x_data, y_data, 'bo')  # Points bleus
+        # plt.xlabel('X')
+        # plt.ylabel('Y')
+        # plt.title('Mon graphique')
+        # plt.grid(True)
+        # plt.show(block=False)
+        # input("Appuyez sur Entrée pour quitter...")  # Attendre l'entrée de l'utilisateur pour quitter
+
+        logistic_regression = LogisticRegression(data_parsed, True)
         logistic_regression.training()
 
     except Exception as msg:

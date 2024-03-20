@@ -23,7 +23,7 @@ class LogisticRegression:
             data[column_name] = data[column_name].apply(lambda x: (x - self.means[column_name]) / self.std[column_name])
         return data
 
-    def training(self, step_size=0.09, training_iterations=1):
+    def training(self, step_size=0.09, training_iterations=200):
         ravenclaw_df = self.df.copy()
         ravenclaw_df.loc[ravenclaw_df['Hogwarts House'] == 'Ravenclaw', 'Hogwarts House'] = 1
         ravenclaw_df.loc[ravenclaw_df['Hogwarts House'] != 1, 'Hogwarts House'] = 0
@@ -49,6 +49,7 @@ class LogisticRegression:
         temp_theta =  np.zeros(len(X.columns))
         temp_theta_bias = np.zeros(1)
         m = len(X.values)
+        chart = self.chart
         for _ in range(training_iterations):
             predictions = X.apply(lambda x: self.model_prediction(theta_values[1:].T, x.values, theta_values[0]), axis=1)
             temp_theta_bias = (1 / m) * (predictions - Y).sum()
@@ -60,11 +61,14 @@ class LogisticRegression:
                 temp_theta[i] = derivative
             theta_values[1:] -= step_size * temp_theta
             theta_values[0] -= step_size * temp_theta_bias
-            print(predictions)
+            if chart is True:
+                self.new_graph_value(theta_values, self.cost_function(predictions, Y, m))
+            # print(predictions)
         return theta_values
 
-    def cost_function(self, fun_h):
-        print(fun_h)
+    def cost_function(self, predictions, real_values, m):
+        cost = -(1/m) * (real_values * np.log(predictions) + (1 - real_values) * np.log(1 - predictions)).sum()
+        return cost
 
     def model_prediction(self, theta, x, bias):
         return self.sigmoid(bias + (theta * x).sum())
@@ -89,6 +93,27 @@ class LogisticRegression:
         # plt.plot(x_data, y_data, 'bo')
         # plt.show(block=False)
         #show
+    def new_graph_value(self, theta, cost):
+        print(cost, theta)
+        plt.figure(figsize=(10, 6))
+
+        # Affichage des paramètres
+        plt.plot(theta, marker='o', linestyle='-', label='Paramètres')
+
+        # Affichage de la valeur de la fonction de coût
+        plt.axhline(y=cost, color='r', linestyle='--', label='Fonction de coût')
+
+        # Ajout d'une légende
+        plt.legend()
+
+        # Configuration des axes
+        plt.xlabel('Index du paramètre')
+        plt.ylabel('Valeur')
+        plt.title('Paramètres et fonction de coût')
+
+        # Affichage du graphique
+        plt.grid(True)
+        plt.show()
     
 def parse_data(df):
     data = df.drop(["Index","First Name","Last Name","Birthday","Best Hand", "Potions", "Arithmancy", "Care of Magical Creatures"], axis=1).replace([np.nan], 0)

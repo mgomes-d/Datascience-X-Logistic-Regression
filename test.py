@@ -28,25 +28,25 @@ def main():
     plt.grid(True)
     plt.show(block=False)  # Afficher le graphique sans bloquer l'exécution du script
     # Données pour les nouveaux points
-    new_x = [4, 5, 6]
-    new_y = [7, 8, 9]
+    # new_x = [4, 5, 6]
+    # new_y = [7, 8, 9]
 
     # Ajouter de nouveaux points et mettre à jour le graphique
-    for i in range(len(new_x)):
+    for i in range(7, 1000):
         # Calculer le résultat
-        result = new_x[i] * new_y[i]
+        result = (i - 3) * i
         
         # Afficher le résultat
         print(f"Résultat de l'étape {i+1}: {result}")
         
         # Ajouter le nouveau point au graphique
-        plt.plot(new_x[i], new_y[i], 'ro')  # Nouveau point rouge
+        plt.plot((i - 3), i, 'ro')  # Nouveau point rouge
         
         # Mettre à jour le graphique pour afficher le nouveau point
         plt.draw()
         
         # Attendre un certain temps pour que l'utilisateur puisse voir le graphique
-        plt.pause(0.2)  # Pause d'une seconde
+        plt.pause(0.02)  # Pause d'une seconde
         
     # Attendre l'interaction de l'utilisateur pour fermer le graphique
     plt.pause(0.1)  # Temps de pause en secondes

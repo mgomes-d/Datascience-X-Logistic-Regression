@@ -50,6 +50,8 @@ class LogisticRegression:
         temp_theta_bias = np.zeros(1)
         m = len(X.values)
         chart = self.chart
+        if chart is True:
+            plt.show(block=False)
         for _ in range(training_iterations):
             predictions = X.apply(lambda x: self.model_prediction(theta_values[1:].T, x.values, theta_values[0]), axis=1)
             temp_theta_bias = (1 / m) * (predictions - Y).sum()
@@ -86,34 +88,41 @@ class LogisticRegression:
     def show_chart(self):
         # fig = plt.figure(figsize=(8, 6))
         # ax = fig.add_subplot(111)
-        # x_data = [1, 2, 3]
+        x_data = [1, 2, 3]
         y_data = [4, 5, 6]
 
         # # Créer le graphique initial avec les données initiales
         # plt.plot(x_data, y_data, 'bo')
-        # plt.show(block=False)
+        plt.show(block=False)
         #show
     def new_graph_value(self, theta, cost):
-        print(cost, theta)
-        plt.figure(figsize=(10, 6))
+        # print(cost, theta)
+        c = 5
+        # plt.figure(figsize=(10, 6))
 
         # Affichage des paramètres
-        plt.plot(theta, marker='o', linestyle='-', label='Paramètres')
+        # plt.plot(theta, marker='o', linestyle='-', label='Paramètres')
 
         # Affichage de la valeur de la fonction de coût
-        plt.axhline(y=cost, color='r', linestyle='--', label='Fonction de coût')
+        # plt.axhline(y=cost, color='r', linestyle='--', label='Fonction de coût')
 
         # Ajout d'une légende
-        plt.legend()
+        # plt.legend()
 
         # Configuration des axes
-        plt.xlabel('Index du paramètre')
-        plt.ylabel('Valeur')
-        plt.title('Paramètres et fonction de coût')
-
+        # plt.xlabel('Index du paramètre')
+        # plt.ylabel('Valeur')
+        # plt.title('Paramètres et fonction de coût')
+        # num_theta = len(theta)
+        # colors = plt.cm.tab20.colors[:num_theta]
+        # for i, value in enumerate(theta):
+        #     # print(value, cost)
+        #     plt.plot(value, cost, color=colors[i], marker='o')
+        #     plt.draw()
+            
         # Affichage du graphique
-        plt.grid(True)
-        plt.show()
+        # plt.grid(True)
+        # plt.show()
     
 def parse_data(df):
     data = df.drop(["Index","First Name","Last Name","Birthday","Best Hand", "Potions", "Arithmancy", "Care of Magical Creatures"], axis=1).replace([np.nan], 0)

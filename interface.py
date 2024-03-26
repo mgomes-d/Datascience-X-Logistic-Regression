@@ -4,82 +4,100 @@ import tkinter as tk
 import numpy as np
 import matplotlib.figure
 from logreg_train import LogisticRegression
+from utils import load_csv
+import threading
 
 def parse_data(df):
     data = df.drop(["Index","First Name","Last Name","Birthday","Best Hand", "Potions", "Arithmancy", "Care of Magical Creatures"], axis=1).replace([np.nan], 0)
     return data
 
-def get_training_values():
-    text1 = training_iteration.get()
-    text2 = step_size.get()
-    print("text = ", text1, text2)
+class LogisticGraph:
+    def __init__(self, df):
+        self.logistic_regression = LogisticRegression(df)
+        self.all_houses = ['Ravenclaw', 'Slytherin', 'Gryffindor', 'Hufflepuff']
+        self.thread = {}
+        self.ax = {}
+        for house in self.all_houses:
+            self.thread[house] = False
 
-def parse_data(df):
-    data = df.drop(["Index","First Name","Last Name","Birthday","Best Hand", "Potions", "Arithmancy", "Care of Magical Creatures"], axis=1).replace([np.nan], 0)
-    return data
-def make_graph():
-    data_train = load_csv("datasets/dataset_train.csv")
-    data_parsed = parse_data(data_train)
-    #init Tkinter
-    logistic_regression = LogisticRegression(data_parsed, True)
-    logistic_regression.training()
-    root = tk.Tk()
-    # fig = matplotlib.figure.Figure()
-    # ax = fig.subplots() 
+    def update_graph(self, house, loss_values):
+        print(house, loss_values)
+        # Ajouter les nouvelles valeurs au graphique existant
+        # self.ax[house].plot(range(len(loss_values)), loss_values, label="New data")
+        # self.ax[house].legend()
+        self.root.after(100, self.update_graph_in_main_thread, house, loss_values)
 
-    fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
+    def update_graph_in_main_thread(self, house, loss_values):
+        self.ax[house].clear()
+        self.ax[house].plot(range(len(loss_values)), loss_values, label="New data")
+        self.ax[house].set_title(house + " loss")
+        self.ax[house].set_xlabel(f'Loss = {loss_values[-1]}')
+        self.figures[house].canvas.draw()
 
-    # Utilisation des sous-graphiques
-    # ax1.plot([1, 2, 3], [4, 5, 6])
-    # ax1.set_title('Sous-graphique 1')
+    def start_thread(self, house, step_size, training_iterations):
+        self.thread[house] = True
+        self.logistic_regression.training(house, step_size, training_iterations)
+        self.update_graph(house, self.logistic_regression.get_cost_and_reset(house))
+        self.thread[house] = False
 
-    # ax2.plot([1, 2, 3], [4, 5, 6])
-    # ax2.set_title('Sous-graphique 2')
+    def start_training(self, house, all_entry):
+        try:
+            step_size = float(all_entry[house][0].get())
+            training_iterations = int(all_entry[house][1].get())
+            assert step_size > 0 and training_iterations > 0, "Only Numbers > 0 are accepted"
+            assert self.thread[house] is False, "Training in progress"
+            training_thread = threading.Thread(target=self.start_thread, args=(house, step_size, training_iterations))
+            training_thread.start()
+            
+        except Exception as msg:
+            print(msg)
 
-    # ax3.plot([1, 2, 3], [4, 5, 6])
-    # ax3.set_title('Sous-graphique 3')
+    def create_graph_and_widgets(self, house, frame, all_entry):
+        fig, ax = plt.subplots(figsize=(4,7))
+        ax.set_title(house + " loss")
+        self.figures[house] = fig
+        self.ax[house] = ax
 
+        canvas = FigureCanvasTkAgg(fig, master=frame)
+        canvas.draw()
+        canvas.get_tk_widget().pack()
 
-    #Tkinter application
+        entry1 = tk.Entry(frame)
+        entry1.insert(0, "value of step_size")
+        entry1.pack()
 
-    frame = tk.Frame(root)
+        entry2 = tk.Entry(frame)
+        entry2.insert(0, "Num of iterations")
+        entry2.pack()
 
-    canvas = FigureCanvasTkAgg(fig, master = frame)
-    canvas.get_tk_widget().pack()
-    frame.pack()
+        all_entry[house] = (entry1, entry2)
 
-    training_iteration = tk.Entry(root, width=30)
-    training_iteration.insert(0, "Iterations(ex: 200)")
+        button = tk.Button(frame, text="Start training", command=lambda: self.start_training(house, all_entry))  
+        button.pack()
 
-    step_size = tk.Entry(root, width=30)
-    step_size.insert(0, "Step size(ex: 0.10)")
+    def init(self):
+        self.root = tk.Tk()
+        self.figures = {}
+        # root.geometry("1200x800")
 
-    button = tk.Button(root, text="Hello", command=get_training_values)
+        frames = [tk.Frame(self.root) for _ in range(len(self.all_houses))]
+        all_entry = {}
 
-    training_iteration.pack()
-    step_size.pack()
-    button.pack()
+        for house, frame in zip(self.all_houses, frames):
+            self.create_graph_and_widgets(house, frame, all_entry)
 
-    root.mainloop()
+        for frame in frames:
+            frame.pack(side=tk.LEFT)
+
+        self.root.mainloop()
 
 
 def main():
     try:
-        # data_train = load_csv("datasets/dataset_train.csv")
-        # data_parsed = parse_data(data_train)
-        make_graph()
-        # x_data = [1, 2, 3]
-        # y_data = [4, 5, 6]
-
-        # Créer le graphique initial avec les données initiales
-        # plt.plot(x_data, y_data, 'bo')  # Points bleus
-        # plt.xlabel('X')
-        # plt.ylabel('Y')
-        # plt.title('Mon graphique')
-        # plt.grid(True)
-        # plt.show(block=False)
-        # input("Appuyez sur Entrée pour quitter...")  # Attendre l'entrée de l'utilisateur pour quitter
-
+        data_train = load_csv("datasets/dataset_train.csv")
+        data_parsed = parse_data(data_train)
+        graph = LogisticGraph(data_parsed)
+        graph.init()
     except Exception as msg:
         print(msg, "Error")
 

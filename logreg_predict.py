@@ -38,7 +38,7 @@ class Predict_price:
         result = []
         for value in values:
             sum_prediction = theta[0] + (theta[1:] * value).sum()
-            sig_prediction = sigmoid(sum_prediction)
+            sig_prediction = self.sigmoid(sum_prediction)
             result.append(sig_prediction)
         return result
 
@@ -47,8 +47,8 @@ class Predict_price:
         df.rename_axis('Index', inplace=True)
         df.to_csv("houses.csv", index=True)
 
-def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
+    def sigmoid(self, x):
+        return 1 / (1 + np.exp(-x))
 
 def main():
     try:

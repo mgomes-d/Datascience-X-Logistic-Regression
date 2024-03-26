@@ -1,16 +1,27 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 import sys
 from utils import load_csv
 import time
 
 class LogisticRegression:
-    def __init__(self, df, chart=False):
+    def __init__(self, df):
         self.df = self.stand_input_data(df)
-        self.chart = chart
-        if chart is True:
-            self.show_chart()
+        self.ravenclaw_df = self.clean_house_data("Ravenclaw")
+        self.slytherin_df = self.clean_house_data("Slytherin")
+        self.gryffindor_df = self.clean_house_data("Gryffindor")
+        self.hufflepuff_df = self.clean_house_data("Hufflepuff")
+        self.ravenclaw_theta = np.zeros(len(self.df.columns))
+        self.slytherin_theta = np.zeros(len(self.df.columns))
+        self.gryffindor_theta = np.zeros(len(self.df.columns))
+        self.hufflepuff_theta = np.zeros(len(self.df.columns))
+
+    def clean_house_data(self, house_name):
+        clean_df = self.df.copy()
+        clean_df.loc[clean_df['Hogwarts House'] == house_name, 'Hogwarts House'] = 1
+        clean_df.loc[clean_df['Hogwarts House'] != 1, 'Hogwarts House'] = 0
+        return clean_df
+
     def stand_input_data(self, df):
         data = df.copy()
         self.means = {}
@@ -23,35 +34,26 @@ class LogisticRegression:
             data[column_name] = data[column_name].apply(lambda x: (x - self.means[column_name]) / self.std[column_name])
         return data
 
-    def training(self, step_size=0.09, training_iterations=200):
-        ravenclaw_df = self.df.copy()
-        ravenclaw_df.loc[ravenclaw_df['Hogwarts House'] == 'Ravenclaw', 'Hogwarts House'] = 1
-        ravenclaw_df.loc[ravenclaw_df['Hogwarts House'] != 1, 'Hogwarts House'] = 0
-        slytherin_df = self.df.copy()
-        slytherin_df.loc[slytherin_df['Hogwarts House'] == 'Slytherin', 'Hogwarts House'] = 1
-        slytherin_df.loc[slytherin_df['Hogwarts House'] != 1, 'Hogwarts House'] = 0
-        gryffindor_df = self.df.copy()
-        gryffindor_df.loc[gryffindor_df['Hogwarts House'] == 'Gryffindor', 'Hogwarts House'] = 1
-        gryffindor_df.loc[gryffindor_df['Hogwarts House'] != 1, 'Hogwarts House'] = 0
-        hufflepuff_df = self.df.copy()
-        hufflepuff_df.loc[hufflepuff_df['Hogwarts House'] == 'Hufflepuff', 'Hogwarts House'] = 1
-        hufflepuff_df.loc[hufflepuff_df['Hogwarts House'] != 1, 'Hogwarts House'] = 0
-        ravenclaw_theta = self.binary_classification(ravenclaw_df, training_iterations, step_size)
-        slytherin_theta = self.binary_classification(slytherin_df, training_iterations, step_size)
-        gryffindor_theta = self.binary_classification(gryffindor_df, training_iterations, step_size)
-        hufflepuff_theta = self.binary_classification(hufflepuff_df, training_iterations, step_size)
-        self.store_parameters(ravenclaw_theta, slytherin_theta, gryffindor_theta, hufflepuff_theta)
+    def train_house(self, house_name):
+        theta_values = getattr(self, house_name.lower() + "_theta")
+        df = getattr(self, house_name.lower() + "_df")
+        theta_values = 0
+        setattr(self, house_name.lower() + "_theta", theta_values)
+        print(self.ravenclaw_theta)
+
+    def training(self, house_name: str, step_size=0.09, training_iterations=1):
+        all_houses = ['Ravenclaw', 'Slytherin', 'Gryffindor', 'Hufflepuff']
+        for house in all_houses:
+            if house_name == house:
+                self.train_house(house)
+        # self.store_parameters(ravenclaw_theta, slytherin_theta, gryffindor_theta, hufflepuff_theta)
     
-    def binary_classification(self, df, training_iterations, step_size):
+    def binary_classification(self, df, training_iterations, step_size, theta_values):
         Y = df["Hogwarts House"]
         X = df.drop("Hogwarts House", axis=1, inplace=False)
-        theta_values = np.zeros(len(df.columns))
         temp_theta =  np.zeros(len(X.columns))
         temp_theta_bias = np.zeros(1)
         m = len(X.values)
-        chart = self.chart
-        if chart is True:
-            plt.show(block=False)
         for _ in range(training_iterations):
             predictions = X.apply(lambda x: self.model_prediction(theta_values[1:].T, x.values, theta_values[0]), axis=1)
             temp_theta_bias = (1 / m) * (predictions - Y).sum()
@@ -63,9 +65,6 @@ class LogisticRegression:
                 temp_theta[i] = derivative
             theta_values[1:] -= step_size * temp_theta
             theta_values[0] -= step_size * temp_theta_bias
-            if chart is True:
-                self.new_graph_value(theta_values, self.cost_function(predictions, Y, m))
-            # print(predictions)
         return theta_values
 
     def cost_function(self, predictions, real_values, m):
@@ -85,44 +84,6 @@ class LogisticRegression:
         theta_df = pd.DataFrame(data)
         theta_df.to_csv("parameters.csv", index=False)
 
-    def show_chart(self):
-        # fig = plt.figure(figsize=(8, 6))
-        # ax = fig.add_subplot(111)
-        x_data = [1, 2, 3]
-        y_data = [4, 5, 6]
-
-        # # Créer le graphique initial avec les données initiales
-        # plt.plot(x_data, y_data, 'bo')
-        plt.show(block=False)
-        #show
-    def new_graph_value(self, theta, cost):
-        # print(cost, theta)
-        c = 5
-        # plt.figure(figsize=(10, 6))
-
-        # Affichage des paramètres
-        # plt.plot(theta, marker='o', linestyle='-', label='Paramètres')
-
-        # Affichage de la valeur de la fonction de coût
-        # plt.axhline(y=cost, color='r', linestyle='--', label='Fonction de coût')
-
-        # Ajout d'une légende
-        # plt.legend()
-
-        # Configuration des axes
-        # plt.xlabel('Index du paramètre')
-        # plt.ylabel('Valeur')
-        # plt.title('Paramètres et fonction de coût')
-        # num_theta = len(theta)
-        # colors = plt.cm.tab20.colors[:num_theta]
-        # for i, value in enumerate(theta):
-        #     # print(value, cost)
-        #     plt.plot(value, cost, color=colors[i], marker='o')
-        #     plt.draw()
-            
-        # Affichage du graphique
-        # plt.grid(True)
-        # plt.show()
     
 def parse_data(df):
     data = df.drop(["Index","First Name","Last Name","Birthday","Best Hand", "Potions", "Arithmancy", "Care of Magical Creatures"], axis=1).replace([np.nan], 0)
@@ -132,20 +93,8 @@ def main():
     try:
         data_train = load_csv(sys.argv[1])
         data_parsed = parse_data(data_train)
-        # x_data = [1, 2, 3]
-        # y_data = [4, 5, 6]
-
-        # Créer le graphique initial avec les données initiales
-        # plt.plot(x_data, y_data, 'bo')  # Points bleus
-        # plt.xlabel('X')
-        # plt.ylabel('Y')
-        # plt.title('Mon graphique')
-        # plt.grid(True)
-        # plt.show(block=False)
-        # input("Appuyez sur Entrée pour quitter...")  # Attendre l'entrée de l'utilisateur pour quitter
-
-        logistic_regression = LogisticRegression(data_parsed, True)
-        logistic_regression.training()
+        logistic_regression = LogisticRegression(data_parsed)
+        logistic_regression.training("Ravenclaw")
 
     except Exception as msg:
         print(msg, "Error")

@@ -45,6 +45,7 @@ class LogisticGraph:
             step_size = float(all_entry[house][0].get())
             training_iterations = int(all_entry[house][1].get())
             assert step_size > 0 and training_iterations > 0, "Only Numbers > 0 are accepted"
+            assert step_size <= 3, "Step_size too big"
             assert self.thread[house] is False, "Training in progress"
             training_thread = threading.Thread(target=self.start_thread, args=(house, step_size, training_iterations))
             training_thread.start()

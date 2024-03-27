@@ -45,7 +45,7 @@ class LogisticRegression:
         theta_values = self.binary_classification(house_name, df, training_iterations, step_size, theta_values)
         setattr(self, house_name.lower() + "_theta", theta_values)
 
-    def training(self, house_name: str, step_size=0.09, training_iterations=10):
+    def training(self, house_name: str, step_size=0.09, training_iterations=300):
         all_houses = ['Ravenclaw', 'Slytherin', 'Gryffindor', 'Hufflepuff']
         for house in all_houses:
             if house_name == house:
@@ -82,7 +82,6 @@ class LogisticRegression:
     def get_cost_and_reset(self, house_name):
         values = getattr(self, house_name.lower() + "_loss")
         setattr(self, house_name.lower() + "_loss", [])
-        print(getattr(self, house_name.lower() + "_loss"))
         return values
 
     def model_prediction(self, theta, x, bias):

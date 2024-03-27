@@ -17,14 +17,11 @@ class LogisticGraph:
         self.all_houses = ['Ravenclaw', 'Slytherin', 'Gryffindor', 'Hufflepuff']
         self.thread = {}
         self.ax = {}
+        self.active_threads = []
         for house in self.all_houses:
             self.thread[house] = False
 
     def update_graph(self, house, loss_values):
-        print(house, loss_values)
-        # Ajouter les nouvelles valeurs au graphique existant
-        # self.ax[house].plot(range(len(loss_values)), loss_values, label="New data")
-        # self.ax[house].legend()
         self.root.after(100, self.update_graph_in_main_thread, house, loss_values)
 
     def update_graph_in_main_thread(self, house, loss_values):
@@ -49,12 +46,14 @@ class LogisticGraph:
             assert self.thread[house] is False, "Training in progress"
             training_thread = threading.Thread(target=self.start_thread, args=(house, step_size, training_iterations))
             training_thread.start()
+            self.active_threads.append(training_thread)
             
         except Exception as msg:
-            print(msg)
+            print("Error", msg)
 
     def create_graph_and_widgets(self, house, frame, all_entry):
-        fig, ax = plt.subplots(figsize=(4,7))
+        # fig, ax = plt.subplots(figsize=(4,7))#Win
+        fig, ax = plt.subplots(figsize=(2,5))#Mac
         ax.set_title(house + " loss")
         self.figures[house] = fig
         self.ax[house] = ax
@@ -64,24 +63,26 @@ class LogisticGraph:
         canvas.get_tk_widget().pack()
 
         entry1 = tk.Entry(frame)
-        entry1.insert(0, "value of step_size")
+        # entry1.insert(0, "value of step_size")
         entry1.pack()
 
         entry2 = tk.Entry(frame)
-        entry2.insert(0, "Num of iterations")
+        # entry2.insert(0, "Num of iterations")
         entry2.pack()
-
         all_entry[house] = (entry1, entry2)
 
         button = tk.Button(frame, text="Start training", command=lambda: self.start_training(house, all_entry))  
         button.pack()
-
+    
     def init(self):
         self.root = tk.Tk()
         self.figures = {}
         # root.geometry("1200x800")
 
         frames = [tk.Frame(self.root) for _ in range(len(self.all_houses))]
+        button = tk.Button(text="Store parameters", command=self.logistic_regression.store_parameters)  
+        button.pack()
+    
         all_entry = {}
 
         for house, frame in zip(self.all_houses, frames):
@@ -91,6 +92,12 @@ class LogisticGraph:
             frame.pack(side=tk.LEFT)
 
         self.root.mainloop()
+        self.root.after(100, self.join_threads)
+
+    def join_threads(self):
+        for thread in self.active_threads:
+            thread.join()
+        self.active_threads = []
 
 
 def main():

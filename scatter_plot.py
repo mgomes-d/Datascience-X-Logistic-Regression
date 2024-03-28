@@ -6,7 +6,12 @@ import numpy as np
 from utils import load_csv
 
 def parse_data(df):
-    data = df.select_dtypes(float).replace([np.nan], 0)
+    data = df.drop(["Index", "Hogwarts House", "First Name","Last Name","Birthday","Best Hand"], axis=1)
+    means = []
+    for content in data:
+        means.append(np.mean(data[content].dropna().values))
+    for content, mean in zip(data, means):
+        data[content].replace(np.nan, mean, inplace=True)
     return data
 
 def main():

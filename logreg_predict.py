@@ -7,8 +7,16 @@ class Predict_price:
         self.parameters_df = parameters_df
         self.predict_data_df = predict_data_df
         self.predict_data_df.drop(['Index','Hogwarts House','First Name','Last Name','Birthday','Best Hand', "Potions", "Arithmancy", "Care of Magical Creatures"], axis=1, inplace=True)
-        self.predict_data_df.fillna(0, inplace=True)
+        self.remove_nan()
         self.normalize_data()
+
+    def remove_nan(self):
+        means = []
+        for content in self.predict_data_df:
+            means.append(np.mean(self.predict_data_df[content].dropna().values))
+
+        for content, mean in zip(self.predict_data_df, means):
+            self.predict_data_df[content].replace(np.nan, mean, inplace=True)
 
     def normalize_data(self):
         self.means = self.parameters_df["mean"].values.astype(float)[1:].copy()
@@ -45,7 +53,7 @@ class Predict_price:
     def create_file(self, list_predict):
         df = pd.DataFrame(list_predict, columns=['Hogwarts House'])
         df.rename_axis('Index', inplace=True)
-        df.to_csv("houses.csv", index=True)
+        df.to_csv("houses1.csv", index=True)
 
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))

@@ -8,7 +8,13 @@ from utils import load_csv
 import threading
 
 def parse_data(df):
-    data = df.drop(["Index","First Name","Last Name","Birthday","Best Hand", "Potions", "Arithmancy", "Care of Magical Creatures"], axis=1).replace([np.nan], 0)
+    data = df.drop(["Index","First Name","Last Name","Birthday","Best Hand", "Potions", "Arithmancy", "Care of Magical Creatures"], axis=1)
+    means = []
+    for content in data.drop("Hogwarts House", axis=1, inplace=False):
+        means.append(np.mean(data[content].dropna().values))
+    
+    for content, mean in zip(data.drop("Hogwarts House", axis=1, inplace=False), means):
+        data[content].replace(np.nan, mean, inplace=True)
     return data
 
 class LogisticGraph:

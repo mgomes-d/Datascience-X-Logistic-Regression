@@ -7,10 +7,17 @@ from utils import load_csv
 class Describe:
     def __init__(self, path: str):
         self.df: pd.DataFrame = load_csv(path)
-        self.features = self.get_features()
+        self.features = self.parse_data()
 
-    def get_features(self):
-        return self.df.select_dtypes(include=[float])
+    def parse_data(self):
+        data = self.df.copy()
+        data = data.select_dtypes(include=[float])
+        means = []
+        for content in data:
+            means.append(np.mean(data[content].dropna().values))
+        for content, mean in zip(data, means):
+            data[content].replace([np.nan], mean, inplace=True)
+        return data
 
     def get_all_information(self):
         options = ["Count", "Mean", "Std", "Min", "25%", "50%", "75%", "Max"]
@@ -18,7 +25,7 @@ class Describe:
         values = []
         for feature in self.features:
             features_names.append(feature)
-            values.append(self.get_feature_informations(self.features[feature].replace([np.nan], 0).values.astype(float)))
+            values.append(self.get_feature_informations(self.features[feature].values.astype(float)))
         data = {}
         for feature_name, value in zip(features_names, values):
             data[feature_name] = value

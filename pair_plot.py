@@ -10,7 +10,7 @@ def main():
         data_train = load_csv(sys.argv[1])
 
         # Créer le pair plot ou la matrice de scatter plot
-        pair_plot = sns.pairplot(data_train.drop(['Index', 'First Name', 'Last Name', 'Birthday'], axis=1), hue='Hogwarts House', height=1)
+        pair_plot = sns.pairplot(data_train.drop(['Index', 'First Name', 'Last Name', 'Birthday', 'Best Hand'], axis=1), hue='Hogwarts House', height=0.7)
 
         # Afficher le pair plot
         plt.show()

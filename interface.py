@@ -58,8 +58,8 @@ class LogisticGraph:
             print("Error", msg)
 
     def create_graph_and_widgets(self, house, frame, all_entry):
-        # fig, ax = plt.subplots(figsize=(4,7))#Win
-        fig, ax = plt.subplots(figsize=(2,5))#Mac
+        fig, ax = plt.subplots(figsize=(4,7))#Win
+        # fig, ax = plt.subplots(figsize=(2,5))#Mac
         ax.set_title(house + " loss")
         self.figures[house] = fig
         self.ax[house] = ax

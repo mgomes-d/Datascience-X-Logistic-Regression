@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from utils.utils import load_csv
 
-class Predict_price:
+class Predict_house:
     def __init__(self, parameters_df, predict_data_df):
         self.parameters_df = parameters_df
         self.predict_data_df = predict_data_df
@@ -53,16 +53,16 @@ class Predict_price:
     def create_file(self, list_predict):
         df = pd.DataFrame(list_predict, columns=['Hogwarts House'])
         df.rename_axis('Index', inplace=True)
-        df.to_csv("houses1.csv", index=True)
+        df.to_csv("logistic_regression/houses.csv", index=True)
 
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
 
 def main():
     try:
-        parameters_df = load_csv("parameters.csv")
+        parameters_df = load_csv("logistic_regression/parameters.csv")
         predict_data_df = load_csv("datasets/dataset_test.csv")
-        prediction = Predict_price(parameters_df, predict_data_df)
+        prediction = Predict_house(parameters_df, predict_data_df)
         predictions_values = prediction.prediction()
         prediction.create_file(predictions_values)
 

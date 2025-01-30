@@ -44,7 +44,7 @@ class LogisticRegression:
         theta_values = self.binary_classification(house_name, df, training_iterations, step_size, theta_values)
         setattr(self, house_name.lower() + "_theta", theta_values)
 
-    def training(self, house_name: str, step_size=0.00000000001, training_iterations=1):
+    def training(self, house_name: str, step_size=0.00000000001, training_iterations=10):
         all_houses = ['Ravenclaw', 'Slytherin', 'Gryffindor', 'Hufflepuff']
         for house in all_houses:
             if house_name == house:
@@ -94,7 +94,7 @@ class LogisticRegression:
                 "Gryffindor": self.gryffindor_theta, "Hufflepuff": self.hufflepuff_theta, \
                 "mean": self.means.values(), "std": self.std.values()}
         theta_df = pd.DataFrame(data)
-        theta_df.to_csv("parameters.csv", index=False)
+        theta_df.to_csv("logistic_regression/parameters.csv", index=False)
 
 def parse_data(df):
     data = df.drop(["Index","First Name","Last Name","Birthday","Best Hand", "Potions", "Arithmancy", "Care of Magical Creatures"], axis=1)

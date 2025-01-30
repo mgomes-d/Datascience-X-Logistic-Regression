@@ -1,6 +1,6 @@
 from sklearn.metrics import accuracy_score
-from utils import load_csv
-from logreg_predict import Predict_price
+from utils.utils import load_csv
+from logistic_regression.logreg_predict import Predict_price
 
 def main():
     dataset_train = load_csv("datasets/dataset_train.csv")

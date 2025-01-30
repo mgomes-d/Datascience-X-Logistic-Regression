@@ -4,7 +4,7 @@ import tkinter as tk
 import numpy as np
 import matplotlib.figure
 from logreg_train import LogisticRegression
-from utils import load_csv
+from utils.utils import load_csv
 import threading
 
 def parse_data(df):

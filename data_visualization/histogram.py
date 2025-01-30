@@ -3,7 +3,7 @@ import sys
 import csv
 import pandas as pd
 import numpy as np
-from utils import load_csv
+from utils.utils import load_csv
 
 def parse_data(df):
     data = df.drop(["Index", "Hogwarts House", "First Name","Last Name","Birthday","Best Hand"], axis=1)

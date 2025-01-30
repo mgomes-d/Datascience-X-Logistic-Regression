@@ -2,7 +2,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import sys
-from utils import load_csv
+from utils.utils import load_csv
 
 def main():
     try:

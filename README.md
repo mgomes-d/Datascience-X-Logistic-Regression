@@ -25,6 +25,9 @@ Participants are encouraged to follow the instructions provided in this readme a
 ## Principal Part
 ### Data Analysis
 Participants are required to create a program to analyze numerical features of the dataset without using predefined functions.
+```
+python -m data_analysis.describe datasets/dataset_train.csv
+```
 ![Describe](./images/describe.png)
 
 ### Data Visualization

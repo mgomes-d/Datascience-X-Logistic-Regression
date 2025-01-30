@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from utils import load_csv
+from utils.utils import load_csv
 
 class Predict_price:
     def __init__(self, parameters_df, predict_data_df):

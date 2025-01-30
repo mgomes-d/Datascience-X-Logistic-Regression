@@ -1,8 +1,7 @@
 import pandas as pd
 import numpy as np
 import sys
-from utils import load_csv
-import time
+from utils.utils import load_csv
 import threading
 
 class LogisticRegression:

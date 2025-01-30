@@ -2,7 +2,7 @@ import sys
 import csv
 import pandas as pd
 import numpy as np
-from utils import load_csv
+from utils.utils import load_csv
 
 class Describe:
     def __init__(self, path: str):
